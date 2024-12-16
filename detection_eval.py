@@ -203,7 +203,6 @@ def run_experiment(matrices, k, gamma, method, graph_type, bipartite, num_trials
 
 
 def run_experiments_all(dataset, param_list, method, num_trials, graph_type, bipartite, verbose=True, save_results=True, rng_plant=None, rng_init=None, dir_name='results', suppress_exceptions=True):
-    assert dataset in ['aamas_sub3', 'wu']
     assert method in method_fn_dict
     assert graph_type in ['B', 'BuA', None]
 

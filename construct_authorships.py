@@ -39,6 +39,7 @@ rng = np.random.default_rng(seed=0)
 A_sub = np.zeros_like(A)
 for p in range(data['n_pap']):
     s = A[p, :].sum()
+    size = rng.integers(1, 5)
     if s <= 3:
         A_sub[p, :] = A[p, :]
     else:
@@ -49,3 +50,19 @@ assert (A_sub <= A).all()
 np.save('datasets/aamas_authorship.npy', A_sub)
 
 
+# Construct and save the authorship for aamas_sub3 variant
+data = utils.load_data_aamas()
+A = data['author_matrix']
+rng = np.random.default_rng(seed=1)
+A_sub = np.zeros_like(A)
+for p in range(data['n_pap']):
+    s = A[p, :].sum()
+    size = rng.integers(1, 5)
+    if s <= size:
+        A_sub[p, :] = A[p, :]
+    else:
+        author_sample = rng.choice(A.shape[1], size=size, replace=False, p=(A[p, :] / s))
+        A_sub[p, author_sample] = 1
+assert (A_sub.sum(axis=1) <= 5).all()
+assert (A_sub <= A).all()
+np.save('datasets/aamas_authorship2.npy', A_sub)

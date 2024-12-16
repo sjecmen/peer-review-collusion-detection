@@ -184,7 +184,6 @@ def run_experiment(dataset, k, gamma, rng, num_trials, bid_weights, bipartite):
 
 
 def run_experiments_all(dataset, param_list, num_trials, bid_weights, bipartite, verbose=True, save_results=True, dir_name='results', rng_plant=None, suppress_exceptions=True):
-    assert dataset in ['aamas_sub3', 'wu']
     assert not bid_weights, 'Should only run without bid weights'
 
     datestring = datetime.datetime.now().isoformat() 

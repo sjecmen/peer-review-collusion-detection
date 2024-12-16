@@ -7,15 +7,19 @@ import itertools
 import os
 
 def load_data(dataset):
-    if dataset == 'wu':
-        data_dict = load_data_wu()
+    if dataset == 'wu_variant':
+        data_dict = load_data_wu(True)
+    elif dataset == 'aamas_sub3_variant':
+        data_dict = load_data_aamas_sub3(True)
+    elif dataset == 'wu':
+        data_dict = load_data_wu(False)
     elif dataset == 'aamas_sub3':
-        data_dict = load_data_aamas_sub3()
+        data_dict = load_data_aamas_sub3(False)
     else:
         assert False
     return data_dict
 
-def load_data_wu():
+def load_data_wu(variant=False):
     '''
     Dataset sourced from (Wu et al., 2021)
     '''
@@ -41,6 +45,14 @@ def load_data_wu():
 
     A = np.load('datasets/wu_authorship.npy')
     assert A.shape == shape
+
+    if variant:
+        rng = np.random.default_rng(seed=2)
+        B_orig = B.copy()
+        idx = rng.choice(np.argwhere(B > 0), size=15000, replace=False) # > 10%
+        idx2 = rng.choice(np.argwhere(B == 0), size=15000, replace=False)
+        B[tuple(idx.T)] = 0
+        B[tuple(idx2.T)] = 1
 
     B[A == 1] = 0
     B = B.astype(np.float32)
@@ -80,10 +92,12 @@ def load_data_aamas():
     data['tpms_matrix'] = T
     return data
 
-def load_data_aamas_sub3():
+def load_data_aamas_sub3(variant=False):
     # AAMAS dataset, subsampling 3 authors UAR
     data = load_data_aamas()
     A_sub = np.load('datasets/aamas_authorship.npy')
+    if variant:
+        A_sub = np.load('datasets/aamas_authorship2.npy')
     data['author_matrix'] = A_sub
     return data
 
@@ -162,3 +176,7 @@ def make_param_list(k_min, k_max, gamma_min, gamma_max, gamma_step, k_step=1):
     gammas = np.linspace(gamma_max, gamma_min, num_gamma).round(decimals=1).tolist()
     param_list = itertools.product(gammas, ks)
     return param_list
+
+if __name__ == "__main__":
+    load_data_aamas_sub3(variant=True)
+    load_data_wu(variant=True)
